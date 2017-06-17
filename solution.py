@@ -41,7 +41,9 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
-    pass
+    grid_keys = ["{}{}".format(letter, i) for letter in "ABCDEFGHI" for i in range(1, 10)]
+    return {k: v if v is not "." else "123456789"
+            for k, v in zip(grid_keys, grid)}
 
 def display(values):
     """
