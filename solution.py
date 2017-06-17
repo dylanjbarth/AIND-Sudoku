@@ -66,10 +66,39 @@ def display(values):
     pass
 
 def eliminate(values):
-    pass
+    """
+    If a box contains a single value, eliminate values
+    from its peers which also contain that value.
+    """
+    for sq, val in values.items():
+        if len(val) == 1:
+            for p in PEERS[sq]:
+                values[p] = values[p].replace(values[sq], "")
+    return values
 
 def only_choice(values):
-    pass
+    """Finalize all values that are the only choice for a unit.
+
+    Go through all the units, and whenever there is a unit with a value
+    that only fits in one box, assign the value to this box.
+
+    Input: Sudoku in dictionary form.
+    Output: Resulting Sudoku in dictionary form after filling in only choices.
+    """
+    for u in ALL_UNITS:
+        seen = [0] * 9  # holds counts for each time we have seen a digit
+        for sq in u:
+            # count what we have only by adding a number at that index
+            for val in values[sq]:
+                seen[int(val) - 1] += 1
+        # get the values we have only seen once
+        seen_once = [str(i + 1) for i, v in enumerate(seen) if v == 1]
+        # finalize values that have only been seen once
+        for sq in u:
+            for seen in seen_once:
+                if seen in values[sq]:
+                    values[sq] = seen
+    return values
 
 def reduce_puzzle(values):
     pass
