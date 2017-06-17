@@ -1,3 +1,8 @@
+from collections import namedtuple
+
+# stores results while we determine which box has the least possibilities
+MinPossBox = namedtuple("MinPossBox", "square", "num_possibilities")
+
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     ["{}{}".format(a, b) for a in A for b in B]
@@ -15,7 +20,6 @@ PEERS = {sq: [set(sum(UNITS[sq], [])) - set([sq])] for sq in BOXES}
 
 # global record of values after each change
 assignments = []
-
 def assign_value(values, box, value):
     """
     Please use this function to update your values dictionary!
@@ -107,10 +111,54 @@ def only_choice(values):
     return values
 
 def reduce_puzzle(values):
-    pass
+    """Apply eliminate and only_choice strategy to reduce the puzzle.
+    If at some point, there is a box with no available values, return False. (this means we tried a search that failed).
+    If the sudoku is solved, return the sudoku.
+    If after an iteration of both functions, the sudoku remains the same, return the sudoku.
+    Input: A sudoku in dictionary form.
+    Output: The resulting sudoku in dictionary form.
+    """
+    strategies = [eliminate, only_choice]
+    n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
+    stalled = False
+    while not stalled:
+        n_solved_before = n_solved()
+        for strategy in strategies:
+            values = strategy(values)
+        n_solved_after = n_solved()
+        stalled = n_solved_before == n_solved_after
+        if any(box for box in values.keys() if not values[box]):
+            return False
+    return values
 
-def search(values):
-    pass
+def search(values, i=1):
+    # start by reducing the puzzle with our simple strategies
+    print("Search Round: {}".format(i))
+    display(values)
+    values = reduce_puzzle(values)
+    if not values:
+        # failed in prev round
+        return False
+    if len(values.keys()) == len(values.values()):
+        # every value is a single digit, done! whoop whoop!
+        return values
+
+    # otherwise branch and search, choose candidate with fewest possibilities
+    to_search = get_least_possibilites_box(values)
+    for v in values[to_search]:
+        new_sudoku = values.copy()
+        # set a possibility in the box
+        new_sudoku[to_search] = v
+        return search(new_sudoku, i+1)
+
+
+def get_least_possibilites_box(values):
+    """Return the box in the sudoku grid that has yet to be solved and has the fewest possibilites."""
+    cur_min = MinPossBox(square=None, num_possibilities=10)
+    for b in BOXES:
+        if len(values[b]) in range(2, cur_min.num_possibilities):
+            cur_min = MinPossBox(square=b, num_possibilities=len(values[b]))
+    return cur_min.square
 
 def solve(grid):
     """
@@ -121,6 +169,8 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+    values = grid_values(grid)
+    return search(values)
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
