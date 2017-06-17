@@ -63,7 +63,13 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
-    pass
+    width = 1 + max(len(values[s]) for s in BOXES)
+    line = '+'.join(['-' * (width * 3)] * 3)
+    for r in ROWS:
+        for c in COLS:
+            print(''.join(values[r + c].center(width) + ('|' if c in '36' else '')))
+        if r in 'CF':
+            print(line)
 
 def eliminate(values):
     """
