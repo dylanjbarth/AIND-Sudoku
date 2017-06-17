@@ -1,11 +1,11 @@
 from collections import namedtuple
 
 # stores results while we determine which box has the least possibilities
-MinPossBox = namedtuple("MinPossBox", "square", "num_possibilities")
+MinPossBox = namedtuple("MinPossBox", ("square", "num_possibilities"))
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
-    ["{}{}".format(a, b) for a in A for b in B]
+    return ["{}{}".format(a, b) for a in A for b in B]
 
 # build up Sudoku constants and helpful lookups
 ROWS = 'ABCDEFGHI'
@@ -16,7 +16,7 @@ COL_UNITS = [cross(ROWS, c) for c in COLS]
 SQ_UNITS = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
 ALL_UNITS = ROW_UNITS + COL_UNITS + SQ_UNITS
 UNITS = {sq: [u for u in ALL_UNITS if sq in u] for sq in BOXES}
-PEERS = {sq: [set(sum(UNITS[sq], [])) - set([sq])] for sq in BOXES}
+PEERS = {sq: list(set(sum(UNITS[sq], [])) - set([sq])) for sq in BOXES}
 
 # global record of values after each change
 assignments = []
