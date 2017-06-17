@@ -46,6 +46,7 @@ def naked_twins(values):
 
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
+    pass
 
 def grid_values(grid):
     """
@@ -69,9 +70,10 @@ def display(values):
     """
     width = 1 + max(len(values[s]) for s in BOXES)
     line = '+'.join(['-' * (width * 3)] * 3)
+    print("".join([c.center(width) for c in COLS]))
     for r in ROWS:
-        for c in COLS:
-            print(''.join(values[r + c].center(width) + ('|' if c in '36' else '')))
+        print(''.join(values[r + c].center(width) + ('|' if c in '36' else '') + (' ' + r if i == 8 else '')
+                      for i, c in enumerate(COLS)))
         if r in 'CF':
             print(line)
 
@@ -122,6 +124,8 @@ def reduce_puzzle(values):
     n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
     stalled = False
     while not stalled:
+        print("Reducing...")
+        display(values)
         n_solved_before = n_solved()
         for strategy in strategies:
             values = strategy(values)
@@ -134,17 +138,19 @@ def reduce_puzzle(values):
 def search(values, i=1):
     # start by reducing the puzzle with our simple strategies
     print("Search Round: {}".format(i))
-    display(values)
     values = reduce_puzzle(values)
     if not values:
         # failed in prev round
+        print("Values false, failed")
         return False
     if len(values.keys()) == len(values.values()):
         # every value is a single digit, done! whoop whoop!
+        print("Solved!")
         return values
 
     # otherwise branch and search, choose candidate with fewest possibilities
     to_search = get_least_possibilites_box(values)
+    print("Starting depth first search on square {}".format(to_search))
     for v in values[to_search]:
         new_sudoku = values.copy()
         # set a possibility in the box
