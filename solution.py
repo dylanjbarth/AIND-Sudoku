@@ -1,3 +1,19 @@
+def cross(A, B):
+    "Cross product of elements in A and elements in B."
+    ["{}{}".format(a, b) for a in A for b in B]
+
+# build up Sudoku constants and helpful lookups
+ROWS = 'ABCDEFGHI'
+COLS = '123456789'
+BOXES = cross(ROWS, COLS)
+ROW_UNITS = [cross(r, COLS) for r in ROWS]
+COL_UNITS = [cross(ROWS, c) for c in COLS]
+SQ_UNITS = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
+ALL_UNITS = ROW_UNITS + COL_UNITS + SQ_UNITS
+UNITS = {sq: [u for u in ALL_UNITS if sq in u] for sq in BOXES}
+PEERS = {sq: [set(sum(UNITS[sq], [])) - set([sq])] for sq in BOXES}
+
+# global record of values after each change
 assignments = []
 
 def assign_value(values, box, value):
@@ -27,10 +43,6 @@ def naked_twins(values):
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
 
-def cross(A, B):
-    "Cross product of elements in A and elements in B."
-    pass
-
 def grid_values(grid):
     """
     Convert grid into a dict of {square: char} with '123456789' for empties.
@@ -41,8 +53,8 @@ def grid_values(grid):
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
     """
-    grid_keys = ["{}{}".format(letter, i) for letter in "ABCDEFGHI" for i in range(1, 10)]
-    return {k: v if v is not "." else "123456789"
+    grid_keys = cross(ROWS, COLS)
+    return {k: v if v is not "." else COLS
             for k, v in zip(grid_keys, grid)}
 
 def display(values):
