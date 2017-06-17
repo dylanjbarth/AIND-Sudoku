@@ -85,7 +85,7 @@ def eliminate(values):
     for sq, val in values.items():
         if len(val) == 1:
             for p in PEERS[sq]:
-                values[p] = values[p].replace(values[sq], "")
+                values = assign_value(values, p, values[p].replace(values[sq], ""))
     return values
 
 def only_choice(values):
@@ -143,7 +143,7 @@ def search(values, i=1):
         # failed in prev round
         print("Values false, failed")
         return False
-    if len(values.keys()) == len(values.values()):
+    if len(values.keys()) == sum([len(v) for v in values.values()]):
         # every value is a single digit, done! whoop whoop!
         print("Solved!")
         return values
