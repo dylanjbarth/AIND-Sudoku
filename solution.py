@@ -35,19 +35,6 @@ def assign_value(values, box, value):
         assignments.append(values.copy())
     return values
 
-def naked_twins(values):
-    """Eliminate values using the naked twins strategy.
-    Args:
-        values(dict): a dictionary of the form {'box_name': '123456789', ...}
-
-    Returns:
-        the values dictionary with the naked twins eliminated from peers.
-    """
-
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
-    pass
-
 def grid_values(grid):
     """
     Convert grid into a dict of {square: char} with '123456789' for empties.
@@ -109,7 +96,30 @@ def only_choice(values):
         for sq in u:
             for seen in seen_once:
                 if seen in values[sq]:
+                    values = assign_value(values, sq, seen)
                     values[sq] = seen
+    return values
+
+def naked_twins(values):
+    """Eliminate values using the naked twins strategy.
+    Args:
+        values(dict): a dictionary of the form {'box_name': '123456789', ...}
+
+    Returns:
+        the values dictionary with the naked twins eliminated from peers.
+    """
+    # search peers for naked twins
+    for sq in BOXES:
+        if len(values[sq]) != 2:
+            continue
+        # check for twins in each unit type
+        for unit in UNITS[sq]:
+            twins = [u for u in unit if values[u] == values[sq]]
+            if len(twins) > 1:
+                # eliminate values of non twin boxes
+                for p in unit:
+                    if p not in twins:
+                        values = assign_value(values, p, values[p].replace(values[sq], ""))
     return values
 
 def reduce_puzzle(values):
@@ -120,7 +130,7 @@ def reduce_puzzle(values):
     Input: A sudoku in dictionary form.
     Output: The resulting sudoku in dictionary form.
     """
-    strategies = [eliminate, only_choice]
+    strategies = [eliminate, only_choice, naked_twins]
     n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
     stalled = False
     while not stalled:
