@@ -14,7 +14,8 @@ BOXES = cross(ROWS, COLS)
 ROW_UNITS = [cross(r, COLS) for r in ROWS]
 COL_UNITS = [cross(ROWS, c) for c in COLS]
 SQ_UNITS = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-ALL_UNITS = ROW_UNITS + COL_UNITS + SQ_UNITS
+DIAG_UNITS = [[k + v for k, v in zip(ROWS, COLS)], [k + v for k, v in zip(ROWS[::-1], COLS)]]
+ALL_UNITS = ROW_UNITS + COL_UNITS + SQ_UNITS + DIAG_UNITS
 UNITS = {sq: [u for u in ALL_UNITS if sq in u] for sq in BOXES}
 PEERS = {sq: list(set(sum(UNITS[sq], [])) - set([sq])) for sq in BOXES}
 
