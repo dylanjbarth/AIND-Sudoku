@@ -116,10 +116,17 @@ def naked_twins(values):
         for unit in UNITS[sq]:
             twins = [u for u in unit if values[u] == values[sq]]
             if len(twins) > 1:
-                # eliminate values of non twin boxes
-                for p in unit:
-                    if p not in twins:
-                        values = assign_value(values, p, values[p].replace(values[sq], ""))
+                values = _eliminate_twins(unit, twins, values, sq)
+    return values
+
+def _eliminate_twins(unit, twins, values, sq):
+    """Helper for naked twins strategy that eliminates twin values from their peers."""
+    for p in unit:
+        if p not in twins:
+            new_values = values[p]
+            for val in values[sq]:
+                new_values = new_values.replace(val, "")
+            values = assign_value(values, p, new_values)
     return values
 
 def reduce_puzzle(values):
