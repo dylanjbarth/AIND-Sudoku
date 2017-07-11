@@ -3,11 +3,18 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: *Student should provide answer here*
+A: Constraint propagation essentially means applying known rules to a problem space to reduce the amount of unknown information. 
+
+In the case of 'naked twins', we know that two possible numbers must appear in one of two peer boxes, which means that they cannot appear in any of the other peers. We can use this information to eliminate those two numbers from the set of possibilities in their peers, which can reduce the overall number of possibilities and simplify the problem.
+  
+To implement this in code, we search each box in the sudoku grid for candidates (boxes with exactly 2 values). If we find one, we then search through each of it's units for a 'twin' (a box with the exact same 2 possibilities). If we find a twin, we can then go through the rest of the unit and eliminate either value from the set of possibilities for any box that is not one of the twins.    
+
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: *Student should provide answer here*
+A: The diagonal sudoku problem introduces a new constraint to the sudoku puzzle, essentially treating diagonal rows as an additional unit (they must contain all of the numbers 1-9). 
+
+Because each of the strategies are applied one box at a time, and for each box, we search through the boxes peer units, we can simply add diagonals to the set of all units, thereby ensuring we will apply our strategies to the diagonal row, as well as the other units (squares, horizontal rows, vertical columns).
 
 ### Install
 
