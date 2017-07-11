@@ -142,6 +142,8 @@ class TestStrategies(unittest.TestCase):
         reduced_grid = solution.only_choice(self.grid)
         self.assertEqual(reduced_grid["B1"], "4")
         self.assertEqual(reduced_grid["C3"], "6")
+        self.assertEqual(reduced_grid["B2"], "5")
+        self.assertEqual(reduced_grid["A1"], "1")
 
     def test_naked_twins(self):
         self.grid.update({

@@ -104,9 +104,8 @@ def only_choice(values):
         # finalize values that have only been seen once
         for sq in u:
             for seen in seen_once:
-                if seen in values[sq]:
+                if len(values[sq]) > 1 and seen in values[sq]:
                     values = assign_value(values, sq, seen)
-                    values[sq] = seen
     return values
 
 def naked_twins(values):
@@ -155,6 +154,7 @@ def reduce_puzzle(values):
     """
     strategies = [eliminate, only_choice, naked_twins]
     n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
+    n_possiblities = lambda: sum([len(poss) for poss in values.values()])
     stalled = False
     while not stalled:
         print("Reducing...")
@@ -164,15 +164,18 @@ def reduce_puzzle(values):
             print("applying {}".format(strategy))
             values = strategy(values)
             display(values)
+            print("Number possibilities: {} / {}".format(n_possiblities(), 9*81))
+            print("Number solved squares: {} / 81".format(n_solved()))
         n_solved_after = n_solved()
         stalled = n_solved_before == n_solved_after
+        # in case we eliminate a single value, we give up and return
         if any(box for box in values.keys() if not values[box]):
             return False
     return values
 
-def search(values, i=1):
+def search(values):
     """
-    Reduce the Sudoku puzzle to it's solution by applying constraint propogation strategies and search.
+    Reduce the Sudoku puzzle to it's solution by applying constraint propagation strategies and search.
 
     Args:
         values: Sudoku grid (or boolean)
@@ -182,7 +185,6 @@ def search(values, i=1):
          - values: the completed Sudoku grid if we solve the puzzle
     """
     # start by reducing the puzzle with our simple strategies
-    print("Search Depth: {}".format(i))
     values = reduce_puzzle(values)
     if not values:
         print("Unable to reduce any further.")
@@ -193,12 +195,16 @@ def search(values, i=1):
 
     # otherwise branch and search, choose candidate with fewest possibilities
     to_search = get_least_possibilites_box(values)
-    print("Starting depth first search on square {}".format(to_search))
-    for v in values[to_search]:
-        new_sudoku = values.copy()
-        # set a possibility in the box
-        new_sudoku[to_search] = v
-        return search(new_sudoku, i+1)
+    return some(search(assign_value(values.copy(), to_search, v)) for v in values[to_search])
+
+
+def some(seq):
+    """Return some element of seq that is true."""
+    for e in seq:
+        if e: return e
+    return False
+
+
 
 
 def get_least_possibilites_box(values):
