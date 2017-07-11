@@ -43,7 +43,7 @@ def grid_values(grid):
     Returns:
         A grid in dictionary form
             Keys: The boxes, e.g., 'A1'
-            Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
+            Values: The possibilities for each box, e.g., '123456789'.
     """
     grid_keys = cross(ROWS, COLS)
     return {k: v if v is not "." else COLS
@@ -58,6 +58,8 @@ def display(values):
     Returns:
         None
     """
+    if not values:
+        return
     width = 1 + max(len(values[s]) for s in BOXES)
     line = '+'.join(['-' * (width * 3)] * 3)
     print("".join([c.center(width) for c in COLS]))
@@ -159,7 +161,9 @@ def reduce_puzzle(values):
         display(values)
         n_solved_before = n_solved()
         for strategy in strategies:
+            print("applying {}".format(strategy))
             values = strategy(values)
+            display(values)
         n_solved_after = n_solved()
         stalled = n_solved_before == n_solved_after
         if any(box for box in values.keys() if not values[box]):
@@ -167,15 +171,23 @@ def reduce_puzzle(values):
     return values
 
 def search(values, i=1):
+    """
+    Reduce the Sudoku puzzle to it's solution by applying constraint propogation strategies and search.
+
+    Args:
+        values: Sudoku grid (or boolean)
+        i: depth of the search
+    Returns one of:
+         - False: if our strategies have failed to find a solution
+         - values: the completed Sudoku grid if we solve the puzzle
+    """
     # start by reducing the puzzle with our simple strategies
-    print("Search Round: {}".format(i))
+    print("Search Depth: {}".format(i))
     values = reduce_puzzle(values)
     if not values:
-        # failed in prev round
-        print("Values false, failed")
+        print("Unable to reduce any further.")
         return False
     if len(values.keys()) == sum([len(v) for v in values.values()]):
-        # every value is a single digit, done! whoop whoop!
         print("Solved!")
         return values
 
@@ -190,7 +202,7 @@ def search(values, i=1):
 
 
 def get_least_possibilites_box(values):
-    """Return the box in the sudoku grid that has yet to be solved and has the fewest possibilites."""
+    """Return the box in the sudoku grid that has yet to be solved and has the fewest possibilities."""
     cur_min = MinPossBox(square=None, num_possibilities=10)
     for b in BOXES:
         if len(values[b]) in range(2, cur_min.num_possibilities):

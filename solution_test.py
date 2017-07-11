@@ -2,6 +2,10 @@ import solution
 import unittest
 
 
+def empty_grid():
+    return solution.grid_values('.'*81)
+
+
 class TestNakedTwins(unittest.TestCase):
     before_naked_twins_1 = {'I6': '4', 'H9': '3', 'I2': '6', 'E8': '1', 'H3': '5', 'H7': '8', 'I7': '1', 'I4': '8',
                             'H5': '6', 'F9': '7', 'G7': '6', 'G6': '3', 'G5': '2', 'E1': '8', 'G3': '1', 'G2': '8',
@@ -93,6 +97,18 @@ class TestDiagonalSudoku(unittest.TestCase):
 
     def test_solve(self):
         self.assertEqual(solution.solve(self.diagonal_grid), self.solved_diag_sudoku)
+
+
+class TestMinPossibilites(unittest.TestCase):
+
+    def test_min_possibilities(self):
+        min_poss = "D3"
+        grid = empty_grid()
+        grid.update({
+            min_poss: '12',
+            "A1": '123'
+        })
+        assert solution.get_least_possibilites_box(grid) == min_poss
 
 if __name__ == '__main__':
     unittest.main()
