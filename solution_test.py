@@ -105,10 +105,55 @@ class TestMinPossibilites(unittest.TestCase):
         min_poss = "D3"
         grid = empty_grid()
         grid.update({
-            min_poss: '12',
-            "A1": '123'
+            min_poss: "12",
+            "A1": "123"
         })
         assert solution.get_least_possibilites_box(grid) == min_poss
 
-if __name__ == '__main__':
+
+class TestStrategies(unittest.TestCase):
+
+    @classmethod
+    def setUp(self):
+        self.grid = empty_grid()
+
+    def test_eliminate(self):
+        self.grid.update({
+            "A1": "1",
+            "A2": "123",
+            "D1": "416"
+        })
+        reduced_grid = solution.eliminate(self.grid)
+        self.assertEqual(reduced_grid["A2"], "23")
+        self.assertEqual(reduced_grid["D1"], "46")
+
+    def test_only_choice(self):
+        self.grid.update({
+            "A1": "1",
+            "A2": "32",
+            "A3": "32",
+            "B1": "432",
+            "B2": "5",
+            "B3": "789",
+            "C1": "789",
+            "C2": "789",
+            "C3": "96",
+        })
+        reduced_grid = solution.only_choice(self.grid)
+        self.assertEqual(reduced_grid["B1"], "4")
+        self.assertEqual(reduced_grid["C3"], "6")
+
+    def test_naked_twins(self):
+        self.grid.update({
+            "B1": "12",
+            "B2": "12",
+            "B3": "1234",
+            "B6": "9712",
+        })
+        reduced_grid = solution.naked_twins(self.grid)
+        self.assertEqual(reduced_grid["B3"], "34")
+        self.assertEqual(reduced_grid["B6"], "97")
+
+
+if __name__ == "__main__":
     unittest.main()
