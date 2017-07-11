@@ -7,7 +7,7 @@ def cross(A, B):
     "Cross product of elements in A and elements in B."
     return ["{}{}".format(a, b) for a in A for b in B]
 
-# build up Sudoku constants and helpful lookups
+# build Sudoku constants and helpful lookups
 ROWS = 'ABCDEFGHI'
 COLS = '123456789'
 BOXES = cross(ROWS, COLS)
@@ -23,7 +23,6 @@ PEERS = {sq: list(set(sum(UNITS[sq], [])) - set([sq])) for sq in BOXES}
 assignments = []
 def assign_value(values, box, value):
     """
-    Please use this function to update your values dictionary!
     Assigns a value to a given box. If it updates the board record it.
     """
 
@@ -55,6 +54,9 @@ def display(values):
     Display the values as a 2-D grid.
     Args:
         values(dict): The sudoku in dictionary form
+
+    Returns:
+        None
     """
     width = 1 + max(len(values[s]) for s in BOXES)
     line = '+'.join(['-' * (width * 3)] * 3)
@@ -77,13 +79,17 @@ def eliminate(values):
     return values
 
 def only_choice(values):
-    """Finalize all values that are the only choice for a unit.
+    """
+    Finalize all values that are the only choice for a unit.
 
-    Go through all the units, and whenever there is a unit with a value
+    Iterate through all the units, and whenever there is a unit with a value
     that only fits in one box, assign the value to this box.
 
-    Input: Sudoku in dictionary form.
-    Output: Resulting Sudoku in dictionary form after filling in only choices.
+    Args:
+        values: Sudoku in dictionary form.
+
+    Returns:
+        Resulting Sudoku in dictionary form after filling in only choices.
     """
     for u in ALL_UNITS:
         seen = [0] * 9  # holds counts for each time we have seen a digit
@@ -113,9 +119,10 @@ def naked_twins(values):
     for sq in BOXES:
         if len(values[sq]) != 2:
             continue
-        # check for twins in each unit type
+        # check for twins in each unit
         for unit in UNITS[sq]:
             twins = [u for u in unit if values[u] == values[sq]]
+            # remove twins if we found them
             if len(twins) > 1:
                 values = _eliminate_twins(unit, twins, values, sq)
     return values
@@ -131,12 +138,18 @@ def _eliminate_twins(unit, twins, values, sq):
     return values
 
 def reduce_puzzle(values):
-    """Apply eliminate and only_choice strategy to reduce the puzzle.
-    If at some point, there is a box with no available values, return False. (this means we tried a search that failed).
-    If the sudoku is solved, return the sudoku.
-    If after an iteration of both functions, the sudoku remains the same, return the sudoku.
-    Input: A sudoku in dictionary form.
-    Output: The resulting sudoku in dictionary form.
+    """
+    Apply eliminate, only_choice, and naked twins strategies to reduce the puzzle.
+
+    - If at some point, there is a box with no available values, return False. (this means we tried a search that failed).
+    - If the sudoku is solved, return the sudoku.
+    - If after an iteration of both functions, the sudoku remains the same, return the sudoku.
+
+    Args:
+        values: A sudoku in dictionary form.
+
+    Returns:
+        The resulting sudoku in dictionary form.
     """
     strategies = [eliminate, only_choice, naked_twins]
     n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
