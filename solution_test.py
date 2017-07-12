@@ -159,10 +159,14 @@ class TestStrategies(unittest.TestCase):
 
 class TestSuperHardSudoku(unittest.TestCase):
 
-    def test_absurd_level_sudoku(self):
-        grid = "...7............5...1..9.372..19....5..8..7...3...6..2.2...8...9.7..14.....4...26"
-        expected = "693725148872314659451689237248197365516832794739546812324968571967251483185473926"
-        self.assertEqual(solution.solve(grid), expected)
+    def _unpack(self, values):
+        """Return values dict as a string"""
+        return "".join([values[box] for box in solution.BOXES])
+
+    def test_medium_level_sudoku(self):
+        grid = ".1....76..........8...4..3..4.......62...8.7....2.53...8....4..........93........"
+        expected = "214359768735826941896741532549137826623498175178265394981672453467513289352984617"
+        self.assertEqual(self._unpack(solution.solve(grid)), expected)
 
 
 if __name__ == "__main__":
