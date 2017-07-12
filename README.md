@@ -16,6 +16,10 @@ A: The diagonal sudoku problem introduces a new constraint to the sudoku puzzle,
 
 Because each of the strategies are applied one box at a time, and for each box, we search through the boxes peer units, we can simply add diagonals to the set of all units, thereby ensuring we will apply our strategies to the diagonal row, as well as the other units (squares, horizontal rows, vertical columns).
 
+### Ideas for improvement:
+
+- create a set of tests using https://www.kaggle.com/bryanpark/sudoku (1M sudoku problems)
+
 ### Install
 
 This project requires **Python 3**.
