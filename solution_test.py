@@ -157,5 +157,13 @@ class TestStrategies(unittest.TestCase):
         self.assertEqual(reduced_grid["B6"], "97")
 
 
+class TestSuperHardSudoku(unittest.TestCase):
+
+    def test_absurd_level_sudoku(self):
+        grid = "...7............5...1..9.372..19....5..8..7...3...6..2.2...8...9.7..14.....4...26"
+        expected = "693725148872314659451689237248197365516832794739546812324968571967251483185473926"
+        self.assertEqual(solution.solve(grid), expected)
+
+
 if __name__ == "__main__":
     unittest.main()
