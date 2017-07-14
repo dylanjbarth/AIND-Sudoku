@@ -156,6 +156,7 @@ def reduce_puzzle(values):
     n_solved = lambda: len([box for box in values.keys() if len(values[box]) == 1])
     n_possiblities = lambda: sum([len(poss) for poss in values.values()])
     stalled = False
+    # continue applying reduction strategies until it has no effect
     while not stalled:
         print("Reducing...")
         display(values)
@@ -166,6 +167,7 @@ def reduce_puzzle(values):
             display(values)
             print("Number possibilities: {} / {}".format(n_possiblities(), 9*81))
             print("Number solved squares: {} / 81".format(n_solved()))
+        # determine if stalled by comparing number of solved squares to snapshot before strategies were applied
         n_solved_after = n_solved()
         stalled = n_solved_before == n_solved_after
         # in case we eliminate a single value, we give up and return
@@ -195,16 +197,17 @@ def search(values):
 
     # otherwise branch and search, choose candidate with fewest possibilities
     to_search = get_least_possibilites_box(values)
-    return some(search(assign_value(values.copy(), to_search, v)) for v in values[to_search])
+    return any_val(search(assign_value(values.copy(), to_search, v)) for v in values[to_search])
 
 
-def some(seq):
-    """Return some element of seq that is true."""
+def any_val(seq):
+    """Return some element of seq that is true.
+
+    Like python's builtin `any` but instead of returning True returns actual value that is True.
+    """
     for e in seq:
         if e: return e
     return False
-
-
 
 
 def get_least_possibilites_box(values):
