@@ -204,6 +204,8 @@ def any_val(seq):
     """Return some element of seq that is true.
 
     Like python's builtin `any` but instead of returning True returns actual value that is True.
+
+    Thanks to http://norvig.com/sudoku.html!
     """
     for e in seq:
         if e: return e
